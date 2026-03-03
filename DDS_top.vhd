@@ -6,28 +6,32 @@ use IEEE.NUMERIC_STD.ALL;
 entity DDS is
     generic(
         FTW_WIDTH : natural := 32;
-        ADDR_BITS : natural := 10;
-        AMP_BITS  : natural := 10
+        PHASE_WIDTH : natural := 10;
+        AMP_WIDTH  : natural := 10
     );
     Port ( CLK      : in STD_LOGIC;
            RST_n    : in STD_LOGIC;
            ENABLE   : in STD_LOGIC;
            FTW_IN   : in unsigned(FTW_WIDTH-1 downto 0);
+           POW_IN   : in unsigned(PHASE_WIDTH-1 downto 0);
            OUT_SQ   : out std_logic;
-           SINE_OUT : out signed(AMP_BITS-1 downto 0) := (others => '0') -- DDS/NCO phase out for LUT.
+           SINE_OUT : out signed(AMP_WIDTH-1 downto 0) := (others => '0') -- DDS/NCO phase out for LUT.
            );
            -- Example: For f_clk=100 MHz, FTW_WIDTH=32:
            -- FTW_IN = round(f_out / 100e6 * 2^32)
 end DDS;
 
 architecture Behavioral of DDS is
-    signal phase_addr : unsigned(ADDR_BITS-1 downto 0);
+    signal lut_addr : unsigned(PHASE_WIDTH-1 downto 0);
+    signal phase_with_offset : unsigned(lut_addr'range);
     
 begin
+    phase_with_offset <= lut_addr + POW_IN;
+    
     NCO_UNIT : entity work.NCO
         generic map(
             FTW_WIDTH => FTW_WIDTH,
-            ADDR_BITS => ADDR_BITS
+            PHASE_WIDTH => PHASE_WIDTH
         )
         port map(
             CLK => CLK,
@@ -35,17 +39,17 @@ begin
             ENABLE => ENABLE,
             FTW_IN => FTW_IN,
             OUT_SQ => OUT_SQ,
-            PHASE_OUT => phase_addr
+            PHASE_OUT => lut_addr
         );
     
     SINE_UNIT : entity work.quarter_sine
         generic map(
-            ADDR_BITS => ADDR_BITS,
-            AMP_BITS => AMP_BITS 
+            PHASE_WIDTH => PHASE_WIDTH,
+            AMP_WIDTH => AMP_WIDTH 
         )
         port map(
             CLK => CLK,
-            ADDR => phase_addr,
+            ADDR => phase_with_offset,
             SINE_OUT => SINE_OUT
         );
         
