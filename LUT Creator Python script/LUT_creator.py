@@ -6,7 +6,7 @@ quarter_sine_lut = True
 
 # Vector de fases
 if quarter_sine_lut:
-    num_points = 2**(bits_for_phase - 2)  # 1/4 de 2^bits_for_phase
+    num_points = 2**(bits_for_phase - 2)  # (2^bits_for_phase) / 4
     steps_for_phase = np.linspace(0, np.pi/2, num_points, endpoint=False)
 else:    
     steps_for_phase = np.linspace(0, 2*np.pi, 2**bits_for_phase, endpoint=False)
@@ -70,3 +70,4 @@ package sine_lut_pkg is\n''')
 end package sine_lut_pkg;
 
 ''')
+
