@@ -7,7 +7,7 @@ entity DDS is
     generic(
         FTW_WIDTH : natural := 32;        -- Frequency Tuning Word width.
         PHASE_WIDTH : natural := 10;
-        AMP_WIDTH  : natural := 10
+        AMP_WIDTH  : natural := 11
     );
     Port ( CLK      : in STD_LOGIC;
            RST_n    : in STD_LOGIC;
@@ -46,7 +46,7 @@ begin
     SINE_UNIT : entity work.quarter_sine
         generic map(
             PHASE_WIDTH => PHASE_WIDTH,
-            AMP_WIDTH => AMP_WIDTH 
+            AMP_BITS => AMP_WIDTH 
         )
         port map(
             CLK => CLK,
