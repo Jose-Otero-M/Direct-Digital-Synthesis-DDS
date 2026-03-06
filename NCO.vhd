@@ -9,7 +9,7 @@ entity NCO is
         PHASE_WIDTH : natural := 10
     );
     Port ( CLK : in STD_LOGIC;
-           RST_n : in STD_LOGIC;
+           RST : in STD_LOGIC;
            ENABLE : in STD_LOGIC;
            FTW_IN : in unsigned(FTW_WIDTH-1 downto 0);
            OUT_SQ : out std_logic;
@@ -29,7 +29,7 @@ begin
     process(CLK)
     begin
         if rising_edge(CLK) then                        
-            if RST_n = '0' or ENABLE = '0' then
+            if RST = '1' or ENABLE = '0' then
                 phase_acc <= (others => '0');
             else
                 phase_acc <= phase_acc + resize(ftw, FTW_WIDTH);
@@ -42,3 +42,4 @@ begin
     PHASE_OUT <= phase_acc(phase_acc'high downto phase_acc'length - PHASE_WIDTH); -- For extern LUT/CORDIC.
 
 end Behavioral;
+
